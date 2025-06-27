@@ -1,7 +1,0 @@
-torch
-transformers
-nltk
-pandas
-matplotlib
-seaborn
-huggingface_hub # For deploying the model
