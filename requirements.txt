@@ -2,6 +2,6 @@ torch
 transformers
 nltk
 pandas
-matplotlib
-seaborn
-huggingface_hub # For deploying the model
+scikit-learn
+huggingface_hub
+accelerate
