@@ -112,4 +112,8 @@ These workflows have **not** been implemented yet but the project is structured 
 -   **Hyperparameter Tuning**: Experiment with different learning rates, batch sizes, and other parameters to optimize model performance.
 -   **Execution Accuracy Metric**: Implement a more robust evaluation metric that involves executing the generated SQL against a database to verify its correctness.
 -   **Advanced Models**: Experiment with larger base models (e.g., `bart-large`) or different architectures (e.g., T5, CodeLlama) to compare performance.
+<<<<<<< HEAD
 sswws
+=======
+hfyfdyfyf
+>>>>>>> 23bd1e31d667ab505c311efd77a2e43e2260479e
