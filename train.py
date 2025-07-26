@@ -21,7 +21,7 @@ def main():
     # --- Data Loading and Splitting ---
     with open(config.TRAIN_DATA_PATH, 'r', encoding='utf-8') as f:
         full_data = json.load(f)
-    subset_data = full_data[:1000]
+    subset_data = full_data[:2000]
     train_data, eval_data = train_test_split(subset_data, test_size=0.1, random_state=42)
     print(f"Data split into {len(train_data)} training samples and {len(eval_data)} validation samples.")
 

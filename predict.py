@@ -35,7 +35,7 @@ def main():
     with open(config.TRAIN_DATA_PATH, 'r') as f:
         full_data = json.load(f)
     
-    eval_data = full_data[:100]  # evaluate on first 500 samples
+    eval_data = full_data[:500]  # evaluate on first 500 samples
 
     # Load table schemas
     with open(config.TABLES_DATA_PATH, 'r') as f:
