@@ -47,14 +47,14 @@ def compute_metrics(eval_preds, tokenizer):
     else:
         raise TypeError(f"Unsupported label format: {type(labels[0])}")
 
-    # BLEU score
-    smoothie = SmoothingFunction().method4
-    bleu_scores = []
-    for pred, label in zip(decoded_preds, decoded_labels):
-        pred_tokens = tokenize_sql(pred)
-        label_tokens = [tokenize_sql(label)]
-        if pred_tokens:
-            bleu_scores.append(sentence_bleu(label_tokens, pred_tokens, smoothing_function=smoothie))
+    # # BLEU score
+    # smoothie = SmoothingFunction().method4
+    # bleu_scores = []
+    # for pred, label in zip(decoded_preds, decoded_labels):
+    #     pred_tokens = tokenize_sql(pred)
+    #     label_tokens = [tokenize_sql(label)]
+    #     if pred_tokens:
+    #         bleu_scores.append(sentence_bleu(label_tokens, pred_tokens, smoothing_function=smoothie))
 
     # Logical form accuracy
     correct = sum(

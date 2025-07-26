@@ -38,3 +38,7 @@ GENERATION_ARGS = {
     "num_beams": 4,
     "early_stopping": True
 }
+
+# Add support for T5
+T5_MODEL_NAME = "t5-small"  # You can change to "google/flan-t5-small" etc.
+T5_MODEL_OUTPUT_DIR = os.path.join(PROJECT_ROOT, "t5_spider_model")

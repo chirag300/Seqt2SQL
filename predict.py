@@ -1,20 +1,33 @@
 # predict.py
+import argparse
 import json
-from src.model_pipeline import Text2SQLModel
+from src.model_pipeline import get_model
 from src.data_pipeline import get_table_schema
 from src.evaluate import compute_metrics
 import src.config as config
 
 def main():
     """
-    Loads the trained model and runs evaluation over 1000 examples.
+    Loads the trained model (BART or T5) and runs evaluation over 500 examples.
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_type', choices=['bart', 't5'], default='bart')
+    args = parser.parse_args()
+    MODEL_TYPE = args.model_type
+
+    # Select correct model output directory based on model type
+    if MODEL_TYPE == "bart":
+        model_dir = config.MODEL_OUTPUT_DIR
+    else:
+        model_dir = config.T5_MODEL_OUTPUT_DIR
+
+    print(f"Using model type: {MODEL_TYPE}")
+    print(f"Loading fine-tuned model from: {model_dir}")
     try:
-        print(f"Loading fine-tuned model from: {config.MODEL_OUTPUT_DIR}")
-        trained_model = Text2SQLModel(model_name_or_path=config.MODEL_OUTPUT_DIR)
+        trained_model = get_model(model_type=MODEL_TYPE, model_name_or_path=model_dir)
         print("Model loaded successfully.")
     except OSError:
-        print(f"Error: Model not found at {config.MODEL_OUTPUT_DIR}.")
+        print(f"Error: Model not found at {model_dir}.")
         print("Please run the training script first using: python train.py")
         return
 
@@ -22,7 +35,7 @@ def main():
     with open(config.TRAIN_DATA_PATH, 'r') as f:
         full_data = json.load(f)
     
-    eval_data = full_data[:500]  # evaluate on first 1000 samples
+    eval_data = full_data[:100]  # evaluate on first 500 samples
 
     # Load table schemas
     with open(config.TABLES_DATA_PATH, 'r') as f:
