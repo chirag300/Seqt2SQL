@@ -1,14 +1,20 @@
 # src/model_pipeline.py
-from transformers import BartTokenizer, BartForConditionalGeneration, Trainer
+
+from transformers import BartTokenizerFast, BartForConditionalGeneration, Trainer
 from . import config
+import torch
+
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+
 
 class Text2SQLModel:
     """
     A pipeline class for initializing, training, and running the Text-to-SQL model.
     """
     def __init__(self, model_name_or_path=config.BASE_MODEL_NAME):
-        self.tokenizer = BartTokenizer.from_pretrained(model_name_or_path)
-        self.model = BartForConditionalGeneration.from_pretrained(model_name_or_path)
+        print(f"Initializing model from base: {model_name_or_path}")
+        self.tokenizer = BartTokenizerFast.from_pretrained(model_name_or_path)
+        self.model = BartForConditionalGeneration.from_pretrained(model_name_or_path).to(device)
 
     def train(self, train_dataset):
         """Trains the model on the provided dataset."""
@@ -30,9 +36,9 @@ class Text2SQLModel:
             max_length=config.TOKENIZER_MAX_LENGTH, 
             truncation=True
         )
-        
+        inputs = {k: v.to(device) for k, v in inputs.items()}  # move inputs to MPS or CUDA/CPU
+
         output_ids = self.model.generate(inputs["input_ids"], **config.GENERATION_ARGS)
-        
         sql_query = self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
         return sql_query
 

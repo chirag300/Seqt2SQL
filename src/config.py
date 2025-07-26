@@ -2,6 +2,7 @@
 import os
 from transformers import TrainingArguments
 
+
 # --- Core Paths ---
 # This computes the project root directory dynamically.
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,7 +15,9 @@ TRAIN_DATA_PATH = os.path.join(DATA_DIR, "train_spider.json")
 TABLES_DATA_PATH = os.path.join(DATA_DIR, "tables.json")
 
 # --- Model & Tokenizer ---
-BASE_MODEL_NAME = "facebook/bart-base"
+# src/config.py
+
+BASE_MODEL_NAME = "lucadiliello/bart-small"
 TOKENIZER_MAX_LENGTH = 128
 
 # --- Training Configuration ---

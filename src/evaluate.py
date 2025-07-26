@@ -22,43 +22,46 @@ def normalize_sql(sql):
 
 def compute_metrics(eval_preds, tokenizer):
     """
-    This function is designed to be used by the Hugging Face Trainer.
-    It computes BLEU score and Logical Form Accuracy.
+    Computes BLEU and Logical Form Accuracy.
+    Handles both token IDs and pre-decoded predictions.
     """
     preds, labels = eval_preds
-    
-    # preds are the model's raw output logits, get the most likely token
+
     if isinstance(preds, tuple):
         preds = preds[0]
-    
-    # Decode generated tokens into text, skipping special tokens like <pad>
-    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
 
-    # Replace -100 in labels as we can't decode them.
-    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+    # Decode predictions safely
+    if isinstance(preds[0], (list, np.ndarray)):
+        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+    elif isinstance(preds[0], str):
+        decoded_preds = preds
+    else:
+        raise TypeError(f"Unsupported prediction format: {type(preds[0])}")
 
-    # --- Metric Calculation ---
-    
-    # 1. BLEU Score
+    # Decode labels safely
+    if isinstance(labels[0], (list, np.ndarray)):
+        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+    elif isinstance(labels[0], str):
+        decoded_labels = labels
+    else:
+        raise TypeError(f"Unsupported label format: {type(labels[0])}")
+
+    # BLEU score
     smoothie = SmoothingFunction().method4
     bleu_scores = []
     for pred, label in zip(decoded_preds, decoded_labels):
         pred_tokens = tokenize_sql(pred)
-        label_tokens = [tokenize_sql(label)] # BLEU score expects a list of reference translations
-        if pred_tokens: # Cannot compute BLEU for empty predictions
+        label_tokens = [tokenize_sql(label)]
+        if pred_tokens:
             bleu_scores.append(sentence_bleu(label_tokens, pred_tokens, smoothing_function=smoothie))
 
-    # 2. Logical Form Accuracy
-    correct_predictions = 0
-    for pred, label in zip(decoded_preds, decoded_labels):
-        if normalize_sql(pred) == normalize_sql(label):
-            correct_predictions += 1
+    # Logical form accuracy
+    correct = sum(
+        normalize_sql(p) == normalize_sql(l)
+        for p, l in zip(decoded_preds, decoded_labels)
+    )
 
-    # Prepare results dictionary
-    result = {
-        'bleu_score': np.mean(bleu_scores) if bleu_scores else 0.0,
-        'logical_form_accuracy': correct_predictions / len(decoded_preds)
+    return {
+        'logical_form_accuracy': correct / len(decoded_preds)
     }
-    
-    return result

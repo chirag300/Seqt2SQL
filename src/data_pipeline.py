@@ -46,7 +46,7 @@ class SpiderDataset(Dataset):
         ).input_ids
         
         # In training, the model ignores token IDs of -100 in the loss calculation.
-        labels[labels == self.tokenizer.pad_token_id] = -100
+        labels[labels == self.tokenizer.pad_token_id] = -1000
         self.labels = labels
 
     def __len__(self):

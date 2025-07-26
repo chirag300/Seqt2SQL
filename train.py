@@ -22,7 +22,7 @@ def main():
     
     # Using a subset of 100 samples for a quick demonstration.
     # For a full run, use the entire `full_data` list.
-    subset_data = full_data[:100]
+    subset_data = full_data[:1000]
 
     # Split the data into training and validation sets (90% train, 10% validation)
     train_data, eval_data = train_test_split(subset_data, test_size=0.1, random_state=42)
@@ -53,15 +53,17 @@ def main():
         model=text2sql_model.model,
         args=config.TRAINING_ARGS,
         train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
+        eval_dataset=eval_dataset
         # We need a lambda function to pass the tokenizer to our metrics function
-        compute_metrics=lambda p: compute_metrics(p, text2sql_model.tokenizer),
     )
-
+ 
     # 5. Start the training and evaluation process
     print("--- Starting Model Training and Evaluation ---")
     trainer.train()
     print("--- Training Finished ---")
+
+
+
 
     # 6. Save the fine-tuned model
     text2sql_model.save()
