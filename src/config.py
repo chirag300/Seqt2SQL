@@ -35,7 +35,7 @@ TRAINING_ARGS = TrainingArguments(
 # --- Prediction/Generation Configuration ---
 GENERATION_ARGS = {
     "max_length": 128,
-    "num_beams": 1,
+    "num_beams": 4,
    
 }
 

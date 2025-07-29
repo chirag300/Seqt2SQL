@@ -97,6 +97,7 @@ def get_model(model_type="bart", model_name_or_path=None):
     if model_type == "bart":
         return Text2SQLModel(model_name_or_path or config.BASE_MODEL_NAME)
     elif model_type == "t5":
-        return Text2SQLT5Model(model_name_or_path or "t5-small")
+        return Text2SQLT5Model(model_name_or_path or config.T5_MODEL_NAME)
     else:
         raise ValueError("model_type must be 'bart' or 't5'")
+
