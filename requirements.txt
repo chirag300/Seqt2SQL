@@ -5,3 +5,4 @@ pandas
 scikit-learn
 huggingface_hub
 accelerate
+senetenpiece
