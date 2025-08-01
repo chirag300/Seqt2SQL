@@ -1,4 +1,3 @@
-# predict.py
 import argparse
 import json
 from src.model_pipeline import get_model
@@ -8,12 +7,12 @@ import src.config as config
 
 def main():
     """
-    Loads the trained model (BART or T5) and runs evaluation over 500 examples.
+    Loads the trained model (BART, T5, or GPT-2) and runs evaluation over 500 examples.
     Supports zero-shot evaluation via --zero_shot flag.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_type', choices=['bart', 't5'], default='bart',
-                        help="Choose which model to evaluate: bart or t5.")
+    parser.add_argument('--model_type', choices=['bart', 't5', 'gpt2'], default='bart',
+                        help="Choose which model to evaluate: bart, t5, or gpt2.")
     parser.add_argument('--zero_shot', action='store_true',
                         help="If set, runs zero-shot evaluation with HuggingFace pre-trained model (no fine-tuning).")
     args = parser.parse_args()
@@ -23,14 +22,18 @@ def main():
     if args.zero_shot:
         if MODEL_TYPE == "bart":
             model_dir = "facebook/bart-base"   # You can change to "facebook/bart-small" if available
-        else:
+        elif MODEL_TYPE == "t5":
             model_dir = "t5-small"
+        else:  # GPT-2 zero-shot
+            model_dir = "gpt2"
         print(f"Running zero-shot evaluation with model: {model_dir}")
     else:
         if MODEL_TYPE == "bart":
             model_dir = config.MODEL_OUTPUT_DIR
-        else:
+        elif MODEL_TYPE == "t5":
             model_dir = config.T5_MODEL_OUTPUT_DIR
+        else:  # GPT-2 fine-tuned
+            model_dir = config.GPT2_MODEL_OUTPUT_DIR
         print(f"Loading fine-tuned model from: {model_dir}")
 
     # Load model
@@ -46,7 +49,7 @@ def main():
     # Load Spider training data
     with open(config.TRAIN_DATA_PATH, 'r') as f:
         full_data = json.load(f)
-    eval_data = full_data[:50]  # Evaluate on first 500 samples
+    eval_data = full_data[:50]  # Evaluate on first 50 samples (adjust as needed)
 
     # Load table schemas
     with open(config.TABLES_DATA_PATH, 'r') as f:

@@ -10,7 +10,7 @@ import json
 def main():
     # ---- Argument parsing ----
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_type', choices=['bart', 't5'], default='bart')
+    parser.add_argument('--model_type', choices=['bart', 't5', 'gpt2'], default='bart')  # Added GPT-2
     args = parser.parse_args()
     MODEL_TYPE = args.model_type
 
