@@ -131,5 +131,5 @@ The `.github/workflows` folder is scaffolded for future CI/CD support. In the fu
 
 This project is research-oriented. Please cite appropriately when using it in academic or production contexts.
 
-**Maintained by:** Your Team Name / Contributors  
+**Maintained by:** Chirag and Utkarsh 
 For questions or contributions, raise an issue or submit a PR.
