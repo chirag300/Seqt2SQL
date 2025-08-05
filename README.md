@@ -1,6 +1,6 @@
-# Project: Text-to-SQL with Transformers (BART, T5, GPT-2) on the Spider Dataset
+# Project: Text-to-SQL with Transformers (BART, T5 , GPT-2) on the Spider Dataset
 
-**Status:** Initial Implementation Complete for BART, Extended to T5 and GPT-2
+**Status:** Initial Implementation Complete for BART small, Extended to T5 and GPT-2
 
 ## 1. Project Objective
 
@@ -70,7 +70,7 @@ The model will load from the appropriate folder (e.g., `t5_spider_model/`) and o
 
 | Model Type | Pretrained Model         | Architecture Type      | Comments |
 |------------|--------------------------|-------------------------|----------|
-| `bart`     | `facebook/bart-base`     | Encoder-Decoder         | Best for sequence-to-sequence |
+| `bart`     | `bart-small`             | Encoder-Decoder         | Best for sequence-to-sequence |
 | `t5`       | `t5-small`               | Text-to-Text Encoder-Decoder | Schema and question are formatted as a string |
 | `gpt2`     | `gpt2`                   | Decoder-Only            | Requires careful input formatting and causal masking |
 
@@ -99,6 +99,7 @@ We compute the following metrics per epoch during training:
 
 - **BLEU Score**: Measures n-gram overlap.
 - **Logical Form Accuracy**: Checks exact match with ground-truth SQL (ignores case and whitespace).
+- **Exact Match Score**: Requires complete, character-for-character correspondence between compared elements with zero tolerance for any variations or deviations.
 
 Example Output:
 ```
