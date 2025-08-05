@@ -1,6 +1,6 @@
 # Project: Text-to-SQL with Transformers (BART, T5 , GPT-2) on the Spider Dataset
 
-**Status:** Initial Implementation Complete for BART small, Extended to T5 and GPT-2
+**Status:** Initial Implementation Complete for BART small, Extended to T5 small and GPT-2
 
 ## 1. Project Objective
 
