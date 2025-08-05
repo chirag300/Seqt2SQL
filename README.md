@@ -1,6 +1,4 @@
-Here’s your **updated README.md** with full integration for **T5** and **GPT-2**, in addition to BART. I’ve preserved your structured formatting and added model-specific notes where appropriate.
 
----
 
 ````markdown
 # Project: Text-to-SQL with Transformers (BART, T5, GPT-2) on the Spider Dataset
@@ -164,7 +162,4 @@ This project is research-oriented. Please cite appropriately when using it in ac
 **Maintained by:** `Your Team Name / Contributors`
 For queries, raise an issue or contact us.
 
-```
-
-Would you like me to export this into a downloadable `README.md` file, or update the one inside your project ZIP and return the full ZIP?
 ```
