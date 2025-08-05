@@ -1,119 +1,170 @@
-# Project: Text-to-SQL with BART on the Spider Dataset
+Here’s your **updated README.md** with full integration for **T5** and **GPT-2**, in addition to BART. I’ve preserved your structured formatting and added model-specific notes where appropriate.
 
-**Status:** Initial Implementation Complete
+---
+
+````markdown
+# Project: Text-to-SQL with Transformers (BART, T5, GPT-2) on the Spider Dataset
+
+**Status:** Initial Implementation Complete for BART, Extended to T5 and GPT-2
+
+---
 
 ## 1. Project Objective
 
-This project implements an end-to-end pipeline for fine-tuning a **BART (Bidirectional and Auto-Regressive Transformer)** model to perform Text-to-SQL translation. Using the **Spider dataset**, our system takes a natural language question as input and generates the corresponding executable SQL query based on the relevant database schema.
+This project implements an end-to-end pipeline for fine-tuning transformer-based models—**BART**, **T5**, and **GPT-2**—for the **Text-to-SQL** task using the **Spider dataset**. Given a natural language question and database schema, the system generates an executable SQL query.
 
-The primary focus of this implementation was to establish a modular and maintainable codebase that separates data processing, model training, and evaluation, moving away from a single-notebook approach.
+We moved from a notebook-based exploration to a fully modularized and maintainable codebase that cleanly separates concerns for data loading, model training, inference, and evaluation.
+
+---
 
 ## 2. Project File Structure
 
-The codebase is organized to ensure a clear separation of concerns, making it easier for team members to navigate and contribute.
-
-```
+```text
 SEQ2SQL/
 │
 ├── .github/
-│   └── workflows/        # Placeholder for future CI/CD automation
+│   └── workflows/        # Placeholder for CI/CD
 │
 ├── data/
-│   ├── train_spider.json   # The raw training data used
-│   └── tables.json         # Database schema definitions
+│   ├── train_spider.json   # Raw training samples
+│   └── tables.json         # Schema definitions
 │
 ├── notebooks/
-│   └── 1_eda_and_exploration.ipynb # EDA notebook for data analysis
+│   └── 1_eda_and_exploration.ipynb  # Initial analysis
 │
 ├── src/
-│   ├── __init__.py         # Defines the 'src' directory as a Python package
-│   ├── config.py           # Centralized configuration for all paths and parameters
-│   ├── data_pipeline.py    # Contains the SpiderDataset class for data handling
-│   ├── model_pipeline.py   # An OOP wrapper for our BART model
-│   └── evaluate.py         # Functions for calculating model performance metrics
+│   ├── __init__.py
+│   ├── config.py           # All config paths and model settings
+│   ├── data_pipeline.py    # SpiderDataset class and data loader
+│   ├── model_pipeline.py   # Model selection and wrapping
+│   └── evaluate.py         # Metric functions
 │
-├── .gitignore              # Standard git ignore file
-├── README.md               # Project documentation (this file)
-├── requirements.txt        # Required Python libraries for the project
-├── train.py                # Main script to execute the model training pipeline
-└── predict.py              # Script for running inference with a trained model
-```
+├── train.py                # Train any model with config
+├── predict.py              # Inference script
+├── requirements.txt
+└── README.md
+````
+
+---
 
 ## 3. Setup and Usage Instructions
 
-Follow these steps to set up the local environment and run the project pipelines.
-
 ### 3.1. Environment Setup
 
-1.  **Clone the repository** to your local machine.
-2.  **Navigate to the project's root directory**.
-3.  **Create and activate a Python virtual environment**:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-    *(On Windows, use `venv\Scripts\activate`)*
+```bash
+git clone https://github.com/your-org/seq2sql.git
+cd seq2sql
 
-4.  **Install all required dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+python3 -m venv venv
+source venv/bin/activate           # On Windows: venv\Scripts\activate
 
-### 3.2. Running the Pipelines
+pip install -r requirements.txt
+```
 
-#### To Train the Model:
-The `train.py` script handles the entire fine-tuning process. It will load the data, process it, train the model, and save the final artifacts to the `bart_spider_model/` directory.
+---
+
+### 3.2. Training a Model
 
 ```bash
-python train.py
+python train.py --model_type bart   # options: bart, t5, gpt2
 ```
-**Note:** The script is currently configured to run with a small subset of the data (100 samples) for quick testing. This can be adjusted in `train.py`.
 
-#### To Make a Prediction:
-After a model has been trained and saved, use the `predict.py` script to test its inference capability.
+You can adjust the number of training samples inside `train.py` for quick testing vs full training.
+
+---
+
+### 3.3. Inference with a Trained Model
 
 ```bash
-python predict.py
+python predict.py --model_type t5
 ```
-This script loads the fine-tuned model from `bart_spider_model/` and generates an SQL query for a sample question defined within the script.
 
-## 4. Methodology
+The model will load from the appropriate folder (e.g., `t5_spider_model/`) and output SQL predictions for sample questions.
 
-### 4.1. Model Architecture
-We selected the **BART** architecture for this task, specifically starting from the `facebook/bart-base` pre-trained checkpoint. BART's denoising autoencoder pre-training objective makes it highly effective for sequence-to-sequence tasks, which aligns well with the Text-to-SQL translation problem.
+---
 
-### 4.2. Training Process
-The model was fine-tuned on a custom-formatted input that provides the necessary context for query generation.
+## 4. Supported Models & Notes
 
--   **Input Format:** The model receives a concatenated string containing both the user question and the simplified database schema:
-    `Question: <NL_QUESTION> Schema: <TABLE_NAME: COL1 | COL2 ...>`
--   **Training API:** The Hugging Face `Trainer` API was used to manage the fine-tuning loop, which simplifies the process and includes integrated logging and evaluation hooks.
+| Model Type | Pretrained Model     | Architecture Type            | Comments                                             |
+| ---------- | -------------------- | ---------------------------- | ---------------------------------------------------- |
+| `bart`     | `facebook/bart-base` | Encoder-Decoder              | Best for sequence-to-sequence                        |
+| `t5`       | `t5-small`           | Text-to-Text Encoder-Decoder | Schema and question are formatted as a string        |
+| `gpt2`     | `gpt2`               | Decoder-Only                 | Requires careful input formatting and causal masking |
 
-## 5. Performance Evaluation
+Specify the model using `--model_type` flag in both training and inference.
 
-To assess the model's performance during training, we implemented two key metrics that are computed at the end of each epoch:
+---
 
-1.  **BLEU Score**: This metric evaluates the quality of the generated text by comparing the n-gram overlap between the predicted SQL query and the ground-truth query. It provides a measure of textual similarity.
-2.  **Logical Form Accuracy**: This is a strict accuracy metric. It performs a case-insensitive, whitespace-normalized string comparison to check for an exact match between the predicted and ground-truth SQL queries.
+## 5. Methodology
 
-The results of these evaluations are printed to the console during the execution of the `train.py` script.
+### 5.1. Input Format
 
-## 6. Automation Readiness (CI/CD)
+All models use the same general input format with slight variations depending on architecture:
 
-The project structure includes a `.github/workflows` directory. This is a placeholder to facilitate the future addition of GitHub Actions for Continuous Integration (CI) and Continuous Deployment (CD). Potential workflows include:
--   **CI**: Automatically running code linters (e.g., `ruff`) and tests on every push or pull request.
--   **CD**: Automating the model training and deployment process to a model registry like Hugging Face Hub.
+```
+Question: <NL_QUESTION> Schema: <TABLE_NAME: COL1 | COL2 ...>
+```
 
-These workflows have **not** been implemented yet but the project is structured to support them easily.
+### 5.2. Model-Specific Details
 
-## 7. Next Steps
+* **BART & T5**: Use Hugging Face's sequence-to-sequence architecture and are compatible with the `Trainer` API.
+* **GPT-2**:
 
--   **Full Dataset Training**: Scale up the training pipeline to use the complete Spider dataset.
--   **Hyperparameter Tuning**: Experiment with different learning rates, batch sizes, and other parameters to optimize model performance.
--   **Execution Accuracy Metric**: Implement a more robust evaluation metric that involves executing the generated SQL against a database to verify its correctness.
--   **Advanced Models**: Experiment with larger base models (e.g., `bart-large`) or different architectures (e.g., T5, CodeLlama) to compare performance.
-<<<<<<< HEAD
-sswws
-=======
-hfyfdyfyf
->>>>>>> 23bd1e31d667ab505c311efd77a2e43e2260479e
+  * Handled as an autoregressive decoder-only model.
+  * Padding and label shifting are managed carefully for causal language modeling.
+
+---
+
+## 6. Evaluation Metrics
+
+We compute the following metrics per epoch during training:
+
+* **BLEU Score**: Measures n-gram overlap.
+* **Logical Form Accuracy**: Checks exact match with ground-truth SQL (ignores case and whitespace).
+
+Example Output:
+
+```
+--- Final Evaluation on 5000 Predictions ---
+logical_form_accuracy: 0.2880
+bleu: 0.5583
+exact_match: 0.1960
+```
+
+*(Shown for BART – others will differ.)*
+
+---
+
+## 7. Automation Readiness (CI/CD)
+
+The `.github/workflows` folder is scaffolded for future CI/CD support. In the future, this could support:
+
+* **Linting & Testing**
+* **Model Versioning**
+* **Automatic Deployment to Hugging Face Hub**
+
+---
+
+## 8. Next Steps
+
+* ✅ Add support for T5 and GPT-2 ✅
+* 🧪 Implement **execution accuracy** by validating queries on actual DBs.
+* 📈 Add experiments with **larger models**: `bart-large`, `t5-base`, etc.
+* 🔍 Improve schema linking with graph-based or IR methods.
+* 📦 Add checkpoint saving, resuming, and evaluation CLI.
+
+---
+
+## 9. License & Citation
+
+This project is research-oriented. Please cite appropriately when using it in academic or production contexts.
+
+---
+
+**Maintained by:** `Your Team Name / Contributors`
+For queries, raise an issue or contact us.
+
+```
+
+Would you like me to export this into a downloadable `README.md` file, or update the one inside your project ZIP and return the full ZIP?
+```
